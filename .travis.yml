@@ -1,3 +1,4 @@
+language: node_js
 sudo: required
 
 # Tell TravisCI we want to use Docker
@@ -25,4 +26,4 @@ after_success:
   - docker push deepphreezer/multi-worker
   - docker push deepphreezer/multi-nginx
   # Take those images and push them to DockerHub
-  
+
