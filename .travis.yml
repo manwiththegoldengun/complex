@@ -1,0 +1,28 @@
+sudo: required
+
+# Tell TravisCI we want to use Docker
+services:
+  - docker
+
+# Build client test image
+before_install:
+  - docker build -t deepphreezer/react-test -f client/Dockerfile.dev ./client
+
+# Run test units
+script:
+  - docker run deepphreezer/react-test npm test -- --coverage
+
+# Build production images if tests pass
+after_success:
+  - docker build -t deepphreezer/multi-client ./client
+  - docker build -t deepphreezer/multi-server ./server
+  - docker build -t deepphreezer/multi-worker ./worker
+  - docker build -t deepphreezer/multi-nginx ./nginx
+  # Login to the docker cli
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push deepphreezer/multi-client
+  - docker push deepphreezer/multi-server
+  - docker push deepphreezer/multi-worker
+  - docker push deepphreezer/multi-nginx
+  # Take those images and push them to DockerHub
+  
