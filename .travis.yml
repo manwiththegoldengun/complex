@@ -21,9 +21,24 @@ after_success:
   - docker build -t deepphreezer/multi-nginx ./nginx
   # Login to the docker cli
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+    # Take those images and push them to DockerHub
   - docker push deepphreezer/multi-client
   - docker push deepphreezer/multi-server
   - docker push deepphreezer/multi-worker
   - docker push deepphreezer/multi-nginx
-  # Take those images and push them to DockerHub
 
+
+deploy:
+  provider: elasticbeanstalk
+  region: us-east-2
+  env: multicontainer-env
+  app: docker-react
+  bucket_name: elasticbeanstalk-us-east-2-029536352529
+  bucket_path: docker-react
+  access_key_id: 
+    secure: "$AWS_ACCESS_KEY"
+  secret_access_key:
+    secure: "$AWS_SECRET_KEY"
+  # Tell Travis we only want to deploy this when a push/pull request is made on the master branch
+  on:
+    branch: master
